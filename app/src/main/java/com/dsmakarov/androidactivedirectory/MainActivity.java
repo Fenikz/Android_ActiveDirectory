@@ -3,6 +3,7 @@ package com.dsmakarov.androidactivedirectory;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,20 +27,23 @@ public class MainActivity extends Activity {
 
         try {
             process = Runtime.getRuntime().exec("ping -c 1 -w 1 google.com");
+
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
 
-            String s;
-            String res = "";
+            String s = "";
+            StringBuilder stringBuilder = new StringBuilder();
             while ((s = bufferedReader.readLine()) != null) {
-                res += s + "\n";
+                stringBuilder.append(s).append("\n");
             }
+
             process.destroy();
-            return res;
+            Toast.makeText(getApplicationContext(), "Reachable", Toast.LENGTH_SHORT).show();
+            return stringBuilder.toString();
 
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            return "Not worked";
         }
     }
 
