@@ -1,6 +1,6 @@
 package com.dsmakarov.androidactivedirectory;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -8,7 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     public static final String TAG = "PING";
 
@@ -21,7 +21,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String ping() {
+
         Process process;
+
         try {
             process = Runtime.getRuntime().exec("ping -c 1 -w 1 google.com");
             BufferedReader bufferedReader = new BufferedReader(
