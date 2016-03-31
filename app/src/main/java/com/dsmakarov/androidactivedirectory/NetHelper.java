@@ -1,5 +1,7 @@
 package com.dsmakarov.androidactivedirectory;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,12 +12,19 @@ import java.util.List;
 
 /**
  * Class contains methods to work with network
+ *
  */
 public class NetHelper {
 
+    /**
+     * Method ping address
+     * @param address ip address or host
+     * @return ping result
+     */
     public static String ping(String address) {
 
         Process process;
+        final String TAG = "NetHelper";
 
         try {
             process = Runtime.getRuntime().exec("ping -c 1 -w 1 " + address);
@@ -31,11 +40,14 @@ public class NetHelper {
             String s = "";
             StringBuilder stringBuilder = new StringBuilder();
 
+
             while ((s = stdout.readLine()) != null || ((s = stderr.readLine()) != null)) {
                 stringBuilder.append(s).append("\n");
             }
 
             process.destroy();
+
+            // TODO: 31.03.2016 доабавить разбор строки и вывод краткого результата
             return stringBuilder.toString();
 
         } catch (IOException e) {
