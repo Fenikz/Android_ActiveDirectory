@@ -1,89 +1,54 @@
 package com.dsmakarov.androidactivedirectory;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.Collections;
-import java.util.List;
 
 public class MainActivity extends Activity {
 
-    public static final String TAG = "PING";
+    public static final String TAG = "MainActivity";
+
+    String mCurrentIp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d(TAG, "onCreate: " + ping("yandex.ru"));
+        mCurrentIp = NetHelper.getIPAddress(true);
 
-        TextView ipTextView = (TextView) findViewById(R.id.ip_text_view);
-        ipTextView.setText(getIPAddress(true));
-    }
+        TextView ipTextView = (TextView) findViewById(R.id.ip_textview);
+        ipTextView.setText(mCurrentIp);
 
-    private String ping(String address) {
+        final EditText targetIpEditText = (EditText) findViewById(R.id.ping_edittext);
 
-        Process process;
+        final TextView resultTextView = (TextView) findViewById(R.id.result_textview);
 
-        try {
-            process = Runtime.getRuntime().exec("ping -c 1 -w 1 " + address);
+        final Button pingButton = (Button) findViewById(R.id.start_ping_button);
+        pingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Log.d(TAG, "onCreate: pingTarget" + pingTarget);
+                resultTextView.setText(NetHelper.ping(targetIpEditText.getText().toString()));
 
-            BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()));
-
-            String s = "";
-            StringBuilder stringBuilder = new StringBuilder();
-            while ((s = bufferedReader.readLine()) != null) {
-                stringBuilder.append(s).append("\n");
+                // прячем клавиатуру. butCalculate - это кнопка
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(pingButton.getWindowToken(),
+                        InputMethodManager.HIDE_NOT_ALWAYS);
             }
+        });
 
-            process.destroy();
-            Toast.makeText(getApplicationContext(), stringBuilder.toString(), Toast.LENGTH_LONG).show();
-            return stringBuilder.toString();
+        //Log.d(TAG, "onCreate: ping " + pingResult);
+        Log.d(TAG, "onCreate: getIpAddress " + mCurrentIp);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
+
     }
 
-    /**
-     * Get IP address from first non-localhost interface
-     * @param ipv4  true=return ipv4, false=return ipv6
-     * @return  address or empty string
-     */
-    public static String getIPAddress(boolean useIPv4) {
-        try {
-            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface intf : interfaces) {
-                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
-                for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress()) {
-                        String sAddr = addr.getHostAddress();
-                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-                        boolean isIPv4 = sAddr.indexOf(':')<0;
 
-                        if (useIPv4) {
-                            if (isIPv4)
-                                return sAddr;
-                        } else {
-                            if (!isIPv4) {
-                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
-                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) { } // for now eat exceptions
-        return "";
-    }
 }
