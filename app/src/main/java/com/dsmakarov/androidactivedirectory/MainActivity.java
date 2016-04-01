@@ -2,10 +2,12 @@ package com.dsmakarov.androidactivedirectory;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -18,6 +20,8 @@ public class MainActivity extends Activity {
 
     public static final String TAG = "MainActivity";
 
+    // TODO: 01.04.2016 Записать текущий ip в SharedPerferences
+
     String mCurrentIp;
 
     @Override
@@ -29,7 +33,7 @@ public class MainActivity extends Activity {
         mCurrentIp = NetHelper.getIPAddress(true);
 
         // TODO: 31.03.2016 Запускать в отдельном потоке
-        new ScanLocalIpsTask().execute(mCurrentIp);
+        //new ScanLocalIpsTask().execute(mCurrentIp);
 
         TextView ipTextView = (TextView) findViewById(R.id.ip_textview);
         ipTextView.setText(mCurrentIp);
@@ -44,6 +48,7 @@ public class MainActivity extends Activity {
                 //Log.d(TAG, "onCreate: pingTarget" + pingTarget);
 
                 String resultString = NetHelper.ping(targetIpEditText.getText().toString());
+                //String resultString = NetHelper.getHostName(targetIpEditText.getText().toString());
                 resultTextView.setText(resultString);
 
                 // Прячем клавиатуру
@@ -54,10 +59,33 @@ public class MainActivity extends Activity {
         });
     }
 
-    private class ScanLocalIpsTask extends AsyncTask<String, Integer, String> {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.action_scan_network:
+                Intent intent = new Intent(this, EnvironmentLanActivity.class);
+                startActivity(intent);
+                return true;
+
+            case R.id.action_settings:
+                return true;
+
+            default:
+                return super.onMenuItemSelected(featureId, item);
+        }
+    }
+
+    public class ScanLocalIpsTask extends AsyncTask<String, Integer, String> {
 
         //Предполагаемая маска (255.255.255.0)
-
 
         @Override
         protected String doInBackground(String... params) {
@@ -92,5 +120,4 @@ public class MainActivity extends Activity {
             // TODO: 31.03.2016 Добавить в процентах (255 = 100%)
         }
     }
-
 }

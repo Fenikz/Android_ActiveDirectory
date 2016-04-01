@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class NetHelper {
 
+    final String TAG = "NetHelper";
+
     /**
      * Method ping address
      * @param address ip address or host
@@ -24,7 +26,6 @@ public class NetHelper {
     public static String ping(String address) {
 
         Process process;
-        final String TAG = "NetHelper";
 
         try {
             process = Runtime.getRuntime().exec("ping -c 1 -w 1 " + address);
@@ -86,5 +87,42 @@ public class NetHelper {
             }
         } catch (Exception ex) { } // for now eat exceptions
         return "";
+    }
+
+    // TODO: 01.04.2016 Дописать процедуру 
+    public static String getHostName(String address) {
+        /*
+        Process process;
+
+        try {
+            process = Runtime.getRuntime().exec("arp -a " + address);
+
+            BufferedReader stdout = new BufferedReader(
+                    new InputStreamReader(process.getInputStream())
+            );
+
+            BufferedReader stderr = new BufferedReader(
+                    new InputStreamReader(process.getErrorStream())
+            );
+
+            String s = "";
+            StringBuilder stringBuilder = new StringBuilder();
+
+
+            while ((s = stdout.readLine()) != null || ((s = stderr.readLine()) != null)) {
+                stringBuilder.append(s).append("\n");
+            }
+
+            process.destroy();
+
+
+            return stringBuilder.toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Exception";
+        }
+        */
+        return "hostname";
     }
 }

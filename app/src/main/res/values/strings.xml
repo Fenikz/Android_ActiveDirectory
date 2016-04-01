@@ -3,4 +3,6 @@
     <string name="current_device_ip">Текущий IP-адрес устройства</string>
     <string name="enter_ping_ip">Введите ip или имя хоста</string>
     <string name="ping_ip">PING IP</string>
+    <string name="action_settings">Настройки</string>
+    <string name="network">Сетевое окружение</string>
 </resources>
