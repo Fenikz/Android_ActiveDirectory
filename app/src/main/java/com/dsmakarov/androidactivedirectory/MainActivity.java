@@ -3,7 +3,7 @@ package com.dsmakarov.androidactivedirectory;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,15 +14,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.HashMap;
 
 public class MainActivity extends Activity {
 
     public static final String TAG = "MainActivity";
 
-    // TODO: 01.04.2016 Записать текущий ip в SharedPerferences
-
-    String mCurrentIp;
+    private String mCurrentIp;
+    private SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +29,13 @@ public class MainActivity extends Activity {
 
         //Получаем текущий IP-адресс
         mCurrentIp = NetHelper.getIPAddress(true);
+
+        mSharedPreferences = getSharedPreferences(Host.PREF_IP_ADDRESS, MODE_PRIVATE);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString("currentIp", mCurrentIp);
+        editor.apply();
+
+        //mSharedPreferences.getString("currentIp", "Exception");
 
         // TODO: 31.03.2016 Запускать в отдельном потоке
         //new ScanLocalIpsTask().execute(mCurrentIp);
@@ -48,6 +53,9 @@ public class MainActivity extends Activity {
                 //Log.d(TAG, "onCreate: pingTarget" + pingTarget);
 
                 String resultString = NetHelper.ping(targetIpEditText.getText().toString());
+
+                //String resultString = NetHelper.multiPing(new String[]{"ya.ru", mCurrentIp});
+
                 //String resultString = NetHelper.getHostName(targetIpEditText.getText().toString());
                 resultTextView.setText(resultString);
 
@@ -80,44 +88,6 @@ public class MainActivity extends Activity {
 
             default:
                 return super.onMenuItemSelected(featureId, item);
-        }
-    }
-
-    public class ScanLocalIpsTask extends AsyncTask<String, Integer, String> {
-
-        //Предполагаемая маска (255.255.255.0)
-
-        @Override
-        protected String doInBackground(String... params) {
-            HashMap<String, String> localIpsHashMap = new HashMap<>();
-
-            Log.d(TAG, "doInBackground: Начало выполнения " + params[0]);
-            
-            //Позиция последней точки в IP-адресе
-            int lastDot = params[0].lastIndexOf(".");
-            String subnetIp = params[0].substring(0, lastDot + 1);
-
-            for (int i = 0; i < 255; i++) {
-                Log.d(TAG, "doInBackground: Цикл " + i);
-                // TODO: 31.03.2016 Добавить ограничение на свой IP
-                if (NetHelper.ping(subnetIp + i).contains("1 received")) {
-                    localIpsHashMap.put(subnetIp + i, "Enabled");
-                } else {
-                    localIpsHashMap.put(subnetIp + i, "Disabled");
-                }
-            }
-
-            for (HashMap.Entry<String, String> element : localIpsHashMap.entrySet()) {
-                Log.d(TAG, "scanLoaclIps: IP " + element.getKey() + " is " + element.getValue() );
-            }
-
-            return "OK";
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            // TODO: 31.03.2016 Добавить в процентах (255 = 100%)
         }
     }
 }

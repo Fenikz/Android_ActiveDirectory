@@ -15,6 +15,6 @@ public class ExampleUnitTest {
 
     @Test
     public void test_ping() {
-
+        NetHelper.multiPing(new String[] {"ya.ru", "google.com"});
     }
 }

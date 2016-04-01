@@ -5,13 +5,16 @@ package com.dsmakarov.androidactivedirectory;
  */
 public class Host {
 
+    //Константа для хранения текущего IP адреса в SharedPreferences
+    public static final String PREF_IP_ADDRESS = "PREF_IP_ADDRESS";
+
     String mIp;
-    String mName;
+    String mHostName;
     Boolean mIsOnline;
 
     public Host(String ip, String name, Boolean isOnline) {
         mIp = ip;
-        mName = name;
+        mHostName = name;
         mIsOnline = isOnline;
     }
 
@@ -20,7 +23,7 @@ public class Host {
     }
 
     public String getName() {
-        return mName;
+        return mHostName;
     }
 
     public Boolean getStatus() {

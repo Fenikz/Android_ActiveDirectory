@@ -4,7 +4,9 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Collections;
@@ -16,7 +18,7 @@ import java.util.List;
  */
 public class NetHelper {
 
-    final String TAG = "NetHelper";
+    private static final String TAG = "NetHelper";
 
     /**
      * Method ping address
@@ -46,7 +48,7 @@ public class NetHelper {
                 stringBuilder.append(s).append("\n");
             }
 
-            process.destroy();
+            //process.destroy();
 
             // TODO: 31.03.2016 доабавить разбор строки и вывод краткого результата
             return stringBuilder.toString();
@@ -56,6 +58,87 @@ public class NetHelper {
             return "Exception";
         }
     }
+
+    public static String testPing(String ip) {
+
+        Process process;
+        StringBuilder stringBuilder = new StringBuilder();
+
+        try {
+            process = new ProcessBuilder()
+                    .command("/system/bin/ping", ip)
+                    .redirectErrorStream(true)
+                    .start();
+
+            BufferedReader stdout = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()));
+
+            String s = "";
+            while ((s = stdout.readLine()) != null) {
+                stringBuilder.append(s).append("\n");
+            }
+
+            process.destroy();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public static String multiPing(String[] addressArray) {
+
+        Process process = null;
+        Runtime runtime = Runtime.getRuntime();
+        String s = "";
+        StringBuilder resultStringBuilder = new StringBuilder();
+
+        try {
+            // TODO: 01.04.2016 Переделать на множественный вызов в рамках одного процесса
+
+            for (int i = 0; i < addressArray.length; i++) {
+                Log.d(TAG, "multiPing: address " + addressArray[i]);
+                process = runtime.exec("ping -c 1 -w 1 " + addressArray[i]);
+
+                BufferedReader stdout = new BufferedReader(
+                        new InputStreamReader(process.getInputStream())
+                );
+
+                BufferedReader stderr = new BufferedReader(
+                        new InputStreamReader(process.getErrorStream())
+                );
+
+                StringBuilder tempStringBuilder = new StringBuilder();
+                //Читаем построчно результат PING
+                while ((s = stdout.readLine()) != null || ((s = stderr.readLine()) != null)) {
+                    tempStringBuilder.append(s).append("\n");
+                }
+
+                resultStringBuilder.append(addressArray[i]);
+
+                if (tempStringBuilder.toString().contains("1 received")) {
+                    resultStringBuilder.append(" Enabled");
+                } else {
+                    resultStringBuilder.append(" Disabled");
+                }
+                resultStringBuilder.append("\n");
+
+                stdout.close();
+                stderr.close();
+                process.destroy();
+            }
+
+            // TODO: 31.03.2016 доабавить разбор строки и вывод краткого результата
+            Log.d(TAG, "multiPing: " + resultStringBuilder.toString());
+            return resultStringBuilder.toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Exception";
+        }
+    }
+
 
     /**
      * Get IP address from first non-localhost interface
