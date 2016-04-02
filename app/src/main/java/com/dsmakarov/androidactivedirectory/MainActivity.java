@@ -62,9 +62,6 @@ public class MainActivity extends Activity {
                 //Log.d(TAG, "onCreate: pingTarget" + pingTarget);
 
                 String resultString = NetHelper.ping(targetIpEditText.getText().toString());
-                //String resultString = NetHelper.multiPing(new String[]{"ya.ru", mCurrentIp});
-
-                //String resultString = NetHelper.getHostName(targetIpEditText.getText().toString());
                 resultTextView.setText(resultString);
 
 
@@ -76,26 +73,6 @@ public class MainActivity extends Activity {
             }
         });
 
-        //+++ TEST +++
-        //new DoSockets().execute("yandex.ru");
-        //--- TEST ---
-
-    }
-
-
-    private class DoSockets extends AsyncTask<String, Void, Void>{
-        @Override
-        protected Void doInBackground(String... params) {
-            try {
-                InetAddress inetAddress = InetAddress.getByName(params[0]);
-                Log.d(TAG, "socketPing: " + inetAddress.toString() + " is reachable " + inetAddress.isReachable(1000));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
     }
 
     @Override

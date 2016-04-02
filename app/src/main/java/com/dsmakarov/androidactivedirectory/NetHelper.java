@@ -174,38 +174,28 @@ public class NetHelper {
 
     // TODO: 01.04.2016 Дописать процедуру 
     public static String getHostName(String address) {
-        /*
-        Process process;
 
-        try {
-            process = Runtime.getRuntime().exec("arp -a " + address);
-
-            BufferedReader stdout = new BufferedReader(
-                    new InputStreamReader(process.getInputStream())
-            );
-
-            BufferedReader stderr = new BufferedReader(
-                    new InputStreamReader(process.getErrorStream())
-            );
-
-            String s = "";
-            StringBuilder stringBuilder = new StringBuilder();
-
-
-            while ((s = stdout.readLine()) != null || ((s = stderr.readLine()) != null)) {
-                stringBuilder.append(s).append("\n");
-            }
-
-            process.destroy();
-
-
-            return stringBuilder.toString();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Exception";
-        }
-        */
         return "hostname";
     }
+
+    public static boolean shutdownPc(String host) {
+
+        /*
+        set computertoshutdown=COMPUTERNAME
+        set timetoshutdown =TIMEtoSHUTDOWN
+        set message=MESSAGE
+
+        shutdown -s -m \\%computertoshutdown% -t %timetoshutdown% -c "%message%"
+         */
+
+        return true;
+    }
+
+    /*
+    String	getHostAddress()
+    Returns the numeric representation of this IP address (such as "127.0.0.1").
+
+    String	getHostName()
+    Returns the host name corresponding to this IP address.
+     */
 }
