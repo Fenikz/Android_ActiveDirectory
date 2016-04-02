@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,6 +15,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 
 
 public class MainActivity extends Activity {
@@ -53,11 +62,12 @@ public class MainActivity extends Activity {
                 //Log.d(TAG, "onCreate: pingTarget" + pingTarget);
 
                 String resultString = NetHelper.ping(targetIpEditText.getText().toString());
-
                 //String resultString = NetHelper.multiPing(new String[]{"ya.ru", mCurrentIp});
 
                 //String resultString = NetHelper.getHostName(targetIpEditText.getText().toString());
                 resultTextView.setText(resultString);
+
+
 
                 // Прячем клавиатуру
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -65,6 +75,27 @@ public class MainActivity extends Activity {
                         InputMethodManager.HIDE_NOT_ALWAYS);
             }
         });
+
+        //+++ TEST +++
+        //new DoSockets().execute("yandex.ru");
+        //--- TEST ---
+
+    }
+
+
+    private class DoSockets extends AsyncTask<String, Void, Void>{
+        @Override
+        protected Void doInBackground(String... params) {
+            try {
+                InetAddress inetAddress = InetAddress.getByName(params[0]);
+                Log.d(TAG, "socketPing: " + inetAddress.toString() + " is reachable " + inetAddress.isReachable(1000));
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 
     @Override

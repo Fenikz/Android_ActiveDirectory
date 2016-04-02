@@ -52,13 +52,14 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
             localIpsHashMap = new HashMap<>();
             localIpsHashMap.put("ip", subnetIp + i);
 
-
-            //if (NetHelper.ping(subnetIp + i).contains("1 received")) {
-
-            if (hostIsReachable(subnetIp + i)) {
-                localIpsHashMap.put("status", "Enabled");
-            } else {
-                localIpsHashMap.put("status", "Disabled");
+            try {
+                if (isReachable(subnetIp + i, 1000)) {
+                    localIpsHashMap.put("status", "Enabled");
+                } else {
+                    localIpsHashMap.put("status", "Disabled");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
             resultArrayList.add(localIpsHashMap);
@@ -72,27 +73,8 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
         return resultArrayList;
     }
 
-    public boolean hostIsReachable(String value) {
-
-        InetAddress address = null;
-        try {
-            address = InetAddress.getByName(value);
-            boolean reachable = address.isReachable(1000);
-            Log.d(TAG, "mPing: " + value + " " + reachable);
-
-            if (reachable) {
-                return true;
-            } else {
-                return false;
-            }
-
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+    private boolean isReachable(String host, int timeout) throws IOException {
+        return InetAddress.getByName(host).isReachable(timeout);
     }
 
     private boolean executeCommand(String host){
@@ -108,7 +90,7 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
 
             if(mExitValue==0){
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
@@ -123,6 +105,37 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
             System.out.println(" Exception:" + e);
         }
         return false;
+    }
+
+    public static int pingHost(String host) throws IOException, InterruptedException {
+        Runtime runtime = Runtime.getRuntime();
+        Process proc = runtime.exec("ping -c 1 " + host);
+        proc.waitFor();
+        int exit = proc.exitValue();
+        return exit;
+    }
+
+    public void pingInetAddr(String host) {
+        InetAddress addr = null;
+
+        try {
+            addr = InetAddress.getByName(host);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        StringBuilder text = new StringBuilder();
+        try {
+            if (addr != null) {
+                if(addr.isReachable(1000)) {
+                    text.append(host).append(" - Respond OK");
+                } else {
+                    text.append(host).append(" - No response");
+                }
+            }
+        } catch (IOException e) {
+            text.append("\n" + e.toString());
+        }
+        Log.d(TAG, "pingInetAddr: " + text);
     }
 
     @Override

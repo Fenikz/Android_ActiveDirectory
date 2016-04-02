@@ -2,7 +2,9 @@ package com.dsmakarov.androidactivedirectory;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -11,12 +13,17 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class EnvironmentLanActivity extends Activity {
+
+    public static final String TAG = "EnvironmentLanActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,4 +65,5 @@ public class EnvironmentLanActivity extends Activity {
             }
         });
     }
+
 }
