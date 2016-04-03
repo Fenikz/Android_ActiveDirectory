@@ -12,6 +12,12 @@
         android:layout_height="wrap_content"
         android:text="@string/start_scan"/>
 
+    <TextView
+        android:id="@+id/hosts_count_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""/>
+
     <ProgressBar
         android:id="@+id/progress_bar"
         style="@android:style/Widget.ProgressBar.Horizontal"

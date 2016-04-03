@@ -22,8 +22,11 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 
 public class MainActivity extends Activity {
@@ -41,15 +44,28 @@ public class MainActivity extends Activity {
         //Получаем текущий IP-адресс
         mCurrentIp = NetHelper.getIPAddress(true);
 
+        //Добавляем IP в SharedPreferences
         mSharedPreferences = getSharedPreferences(Host.PREF_IP_ADDRESS, MODE_PRIVATE);
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString("currentIp", mCurrentIp);
         editor.apply();
 
-        //mSharedPreferences.getString("currentIp", "Exception");
+        TextView macTextView = (TextView) findViewById(R.id.mac_textview);
 
-        // TODO: 31.03.2016 Запускать в отдельном потоке
-        //new ScanLocalIpsTask().execute(mCurrentIp);
+        String mac = "MAC-address";
+        try {
+            InetAddress address = InetAddress.getByName(mCurrentIp);
+            NetworkInterface networkInterface = NetworkInterface.getByInetAddress(address);
+            mac = networkInterface.getDisplayName();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            mac = "UnknownHostException";
+        } catch (SocketException e) {
+            e.printStackTrace();
+            mac = "SocketException";
+        } finally {
+            macTextView.setText(NetHelper.getMACAddress(mac));
+        }
 
         TextView ipTextView = (TextView) findViewById(R.id.ip_textview);
         ipTextView.setText(mCurrentIp);

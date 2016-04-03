@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -73,6 +74,7 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
                     Log.d(TAG, "doInBackground: online " + subnetIp + i);
                     hostCv.put(HostsDatabaseHelper.KEY_IP, subnetIp + i);
                     hostCv.put(HostsDatabaseHelper.KEY_MAC, NetHelper.getMacFromArpCache(subnetIp + i));
+                    hostCv.put(HostsDatabaseHelper.KEY_HOSTNAME, InetAddress.getByName(subnetIp + i).getHostName());
                     db.insert(HostsDatabaseHelper.HOSTS_TABLE, null, hostCv);
                 }
             } catch (IOException e) {
@@ -103,9 +105,6 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
         super.onPostExecute(hashMaps);
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
-        //SQLiteOpenHelper hostsDatabaseHelper = new HostsDatabaseHelper(mContext);
-        //SQLiteDatabase db = hostsDatabaseHelper.getReadableDatabase();
-
         Cursor cursor = db.query(HostsDatabaseHelper.HOSTS_TABLE,
                 new String[]{
                         HostsDatabaseHelper.KEY_ID,
@@ -123,6 +122,10 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
                     0);
 
             mListView.setAdapter(listCursorAdapter);
+
+            Toast.makeText(mContext,
+                    "Найдено " + cursor.getCount() + " хостов",
+                    Toast.LENGTH_SHORT).show();
         }
         //TODO: 03.04.2016 Закрыть курсор
         db.close();
