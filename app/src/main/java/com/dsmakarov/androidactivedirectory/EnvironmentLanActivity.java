@@ -12,10 +12,8 @@ import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 
-import java.util.concurrent.ExecutionException;
 
 public class EnvironmentLanActivity extends Activity {
 
@@ -37,7 +35,11 @@ public class EnvironmentLanActivity extends Activity {
         SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
 
         Cursor cursor = db.query(HostsDatabaseHelper.HOSTS_TABLE,
-                new String[]{ HostsDatabaseHelper.KEY_IP, HostsDatabaseHelper.KEY_MAC },
+                new String[]{
+                        HostsDatabaseHelper.KEY_ID,
+                        HostsDatabaseHelper.KEY_IP,
+                        HostsDatabaseHelper.KEY_MAC
+                },
                 null, null, null, null, null);
 
         if (cursor.moveToFirst()) {
@@ -47,6 +49,8 @@ public class EnvironmentLanActivity extends Activity {
                     new String[] {HostsDatabaseHelper.KEY_IP, HostsDatabaseHelper.KEY_MAC},
                     new int[] {android.R.id.text1, android.R.id.text2},
                     0);
+
+            hostsListAdapter.setAdapter(listCursorAdapter);
         }
 
         startScanButton.setOnClickListener(new View.OnClickListener() {

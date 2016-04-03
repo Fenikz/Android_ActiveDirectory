@@ -61,8 +61,6 @@ public class MainActivity extends Activity {
         pingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Log.d(TAG, "onCreate: pingTarget" + pingTarget);
-
                 String resultString = NetHelper.ping(targetIpEditText.getText().toString());
                 resultTextView.setText(resultString);
 
