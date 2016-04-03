@@ -16,6 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
@@ -63,8 +65,6 @@ public class MainActivity extends Activity {
 
                 String resultString = NetHelper.ping(targetIpEditText.getText().toString());
                 resultTextView.setText(resultString);
-
-
 
                 // Прячем клавиатуру
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
