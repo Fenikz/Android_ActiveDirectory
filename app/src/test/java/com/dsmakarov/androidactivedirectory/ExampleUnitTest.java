@@ -12,9 +12,4 @@ public class ExampleUnitTest {
     public void addition_isCorrect() throws Exception {
         assertEquals(4, 2 + 2);
     }
-
-    @Test
-    public void test_ping() {
-        NetHelper.multiPing(new String[] {"ya.ru", "google.com"});
-    }
 }

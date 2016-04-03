@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 public class HostDetailActivity extends Activity {
 
+    Cursor cursor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,14 +21,14 @@ public class HostDetailActivity extends Activity {
 
         int hostId = (Integer) getIntent().getExtras().get(HostsDatabaseHelper.KEY_ID);
 
-        Cursor cursor = db.query(HostsDatabaseHelper.HOSTS_TABLE,
+        cursor = db.query(HostsDatabaseHelper.HOSTS_TABLE,
                 new String[]{
                         HostsDatabaseHelper.KEY_ID,
                         HostsDatabaseHelper.KEY_IP,
                         HostsDatabaseHelper.KEY_MAC,
                         HostsDatabaseHelper.KEY_HOSTNAME
                 },
-                "_id = ?", new String[] { Integer.toString(hostId) }, null, null, null);
+                "_id = ?", new String[]{Integer.toString(hostId)}, null, null, null);
 
         if (cursor.moveToFirst()) {
 
@@ -45,4 +47,9 @@ public class HostDetailActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        cursor.close();
+        super.onDestroy();
+    }
 }

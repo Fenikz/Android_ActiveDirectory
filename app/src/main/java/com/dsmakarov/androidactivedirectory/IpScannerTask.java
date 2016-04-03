@@ -74,7 +74,8 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
                     Log.d(TAG, "doInBackground: online " + subnetIp + i);
                     hostCv.put(HostsDatabaseHelper.KEY_IP, subnetIp + i);
                     hostCv.put(HostsDatabaseHelper.KEY_MAC, NetHelper.getMacFromArpCache(subnetIp + i));
-                    hostCv.put(HostsDatabaseHelper.KEY_HOSTNAME, InetAddress.getByName(subnetIp + i).getHostName());
+                    // TODO: 03.04.2016 Проверить правильность заполнения hostname 
+                    hostCv.put(HostsDatabaseHelper.KEY_HOSTNAME, InetAddress.getByName(subnetIp + i).getCanonicalHostName());
                     db.insert(HostsDatabaseHelper.HOSTS_TABLE, null, hostCv);
                 }
             } catch (IOException e) {

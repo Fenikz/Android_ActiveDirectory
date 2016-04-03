@@ -1,13 +1,9 @@
 package com.dsmakarov.androidactivedirectory;
 
-import android.util.Log;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Collections;
@@ -27,7 +23,7 @@ public class NetHelper {
      * @return ping result
      */
     public static String ping(String address) {
-
+// TODO: 03.04.2016 Изменить String на InetAddress
         Process process;
 
         try {
@@ -60,6 +56,7 @@ public class NetHelper {
         }
     }
 
+    // TODO: 03.04.2016 Переписать Ping с помощью process builder'а и вывести Err-поток в основной
     public static String testPing(String ip) {
 
         Process process;
@@ -87,59 +84,6 @@ public class NetHelper {
 
         return stringBuilder.toString();
     }
-
-    public static String multiPing(String[] addressArray) {
-
-        Process process = null;
-        Runtime runtime = Runtime.getRuntime();
-        String s = "";
-        StringBuilder resultStringBuilder = new StringBuilder();
-
-        try {
-            // TODO: 01.04.2016 Переделать на множественный вызов в рамках одного процесса
-
-            for (int i = 0; i < addressArray.length; i++) {
-                Log.d(TAG, "multiPing: address " + addressArray[i]);
-                process = runtime.exec("ping -c 1 -w 1 " + addressArray[i]);
-
-                BufferedReader stdout = new BufferedReader(
-                        new InputStreamReader(process.getInputStream())
-                );
-
-                BufferedReader stderr = new BufferedReader(
-                        new InputStreamReader(process.getErrorStream())
-                );
-
-                StringBuilder tempStringBuilder = new StringBuilder();
-                //Читаем построчно результат PING
-                while ((s = stdout.readLine()) != null || ((s = stderr.readLine()) != null)) {
-                    tempStringBuilder.append(s).append("\n");
-                }
-
-                resultStringBuilder.append(addressArray[i]);
-
-                if (tempStringBuilder.toString().contains("1 received")) {
-                    resultStringBuilder.append(" Enabled");
-                } else {
-                    resultStringBuilder.append(" Disabled");
-                }
-                resultStringBuilder.append("\n");
-
-                stdout.close();
-                stderr.close();
-                process.destroy();
-            }
-
-            // TODO: 31.03.2016 доабавить разбор строки и вывод краткого результата
-            Log.d(TAG, "multiPing: " + resultStringBuilder.toString());
-            return resultStringBuilder.toString();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Exception";
-        }
-    }
-
 
     /**
      * Get IP address from first non-localhost interface
@@ -247,31 +191,4 @@ public class NetHelper {
             return null;
         }*/
     }
-    
-    // TODO: 01.04.2016 Дописать процедуру 
-    public static String getHostName(String address) {
-
-        return "hostname";
-    }
-
-    public static boolean shutdownPc(String host) {
-
-        /*
-        set computertoshutdown=COMPUTERNAME
-        set timetoshutdown =TIMEtoSHUTDOWN
-        set message=MESSAGE
-
-        shutdown -s -m \\%computertoshutdown% -t %timetoshutdown% -c "%message%"
-         */
-
-        return true;
-    }
-
-    /*
-    String	getHostAddress()
-    Returns the numeric representation of this IP address (such as "127.0.0.1").
-
-    String	getHostName()
-    Returns the host name corresponding to this IP address.
-     */
 }
