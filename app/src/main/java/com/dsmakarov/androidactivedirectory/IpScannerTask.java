@@ -7,10 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 
 import java.io.IOException;
@@ -62,6 +60,7 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
         String subnetIp = params[0].substring(0, lastDot + 1);
 
         ContentValues hostCv = new ContentValues();
+        db.delete(HostsDatabaseHelper.HOSTS_TABLE, null, null);
 
         //i < 255
         for (int i = 0; i < mSubnetCount; i++) {
@@ -74,7 +73,7 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
                     Log.d(TAG, "doInBackground: online " + subnetIp + i);
                     hostCv.put(HostsDatabaseHelper.KEY_IP, subnetIp + i);
                     hostCv.put(HostsDatabaseHelper.KEY_MAC, NetHelper.getMacFromArpCache(subnetIp + i));
-
+                    db.insert(HostsDatabaseHelper.HOSTS_TABLE, null, hostCv);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -85,8 +84,6 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
 
         if (hostCv.size() > 0) {
             Log.d(TAG, "doInBackground: hostCv.size() " + hostCv.size());
-            db.delete(HostsDatabaseHelper.HOSTS_TABLE, null, null);
-            db.insert(HostsDatabaseHelper.HOSTS_TABLE, null, hostCv);
         }
 
 
