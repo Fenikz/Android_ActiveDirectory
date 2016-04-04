@@ -74,7 +74,7 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
                     Log.d(TAG, "doInBackground: online " + subnetIp + i);
                     hostCv.put(HostsDatabaseHelper.KEY_IP, subnetIp + i);
                     hostCv.put(HostsDatabaseHelper.KEY_MAC, NetHelper.getMacFromArpCache(subnetIp + i));
-                    // TODO: 03.04.2016 Проверить правильность заполнения hostname 
+                    // TODO: 03.04.2016 Проверить правильность заполнения hostname
                     hostCv.put(HostsDatabaseHelper.KEY_HOSTNAME, InetAddress.getByName(subnetIp + i).getCanonicalHostName());
                     db.insert(HostsDatabaseHelper.HOSTS_TABLE, null, hostCv);
                 }
@@ -109,7 +109,7 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
         Cursor cursor = db.query(HostsDatabaseHelper.HOSTS_TABLE,
                 new String[]{
                         HostsDatabaseHelper.KEY_ID,
-                        HostsDatabaseHelper.KEY_IP,
+                        HostsDatabaseHelper.KEY_HOSTNAME,
                         HostsDatabaseHelper.KEY_MAC
                 },
                 null, null, null, null, null);
@@ -118,7 +118,7 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
             SimpleCursorAdapter listCursorAdapter = new SimpleCursorAdapter(mContext,
                     android.R.layout.simple_list_item_2,
                     cursor,
-                    new String[]{HostsDatabaseHelper.KEY_IP, HostsDatabaseHelper.KEY_MAC},
+                    new String[]{HostsDatabaseHelper.KEY_HOSTNAME, HostsDatabaseHelper.KEY_MAC},
                     new int[]{android.R.id.text1, android.R.id.text2},
                     0);
 

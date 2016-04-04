@@ -43,7 +43,7 @@ public class HostDetailActivity extends Activity {
             macTextView.setText("MAC: " + cursor.getString(macColumnIndex));
 
             TextView hostnameTextView = (TextView) findViewById(R.id.hostname_det_textview);
-            hostnameTextView.setText("Hostname " + cursor.getString(hostnameColumnIndex));
+            hostnameTextView.setText("Hostname: " + cursor.getString(hostnameColumnIndex));
         }
     }
 
