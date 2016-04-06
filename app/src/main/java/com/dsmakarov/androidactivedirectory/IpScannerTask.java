@@ -47,7 +47,6 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
         db = hostsDatabaseHelper.getWritableDatabase();
     }
 
-
     @Override
     protected ArrayList<HashMap<String, String>> doInBackground(String... params) {
 

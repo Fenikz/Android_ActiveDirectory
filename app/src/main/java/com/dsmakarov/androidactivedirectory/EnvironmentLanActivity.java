@@ -22,6 +22,7 @@ import android.widget.TextView;
 public class EnvironmentLanActivity extends Activity {
 
     public static final String TAG = "EnvironmentLanActivity";
+    private Cursor cursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,7 @@ public class EnvironmentLanActivity extends Activity {
         SQLiteOpenHelper sqLiteOpenHelper = new HostsDatabaseHelper(this);
         SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
 
-        Cursor cursor = db.query(HostsDatabaseHelper.HOSTS_TABLE,
+        cursor = db.query(HostsDatabaseHelper.HOSTS_TABLE,
                 new String[]{
                         HostsDatabaseHelper.KEY_ID,
                         HostsDatabaseHelper.KEY_IP,
@@ -50,7 +51,7 @@ public class EnvironmentLanActivity extends Activity {
             CursorAdapter listCursorAdapter = new SimpleCursorAdapter(this,
                     android.R.layout.simple_list_item_2,
                     cursor,
-                    new String[] {HostsDatabaseHelper.KEY_IP, HostsDatabaseHelper.KEY_MAC},
+                    new String[] {HostsDatabaseHelper.KEY_HOSTNAME, HostsDatabaseHelper.KEY_MAC},
                     new int[] {android.R.id.text1, android.R.id.text2},
                     0);
 
@@ -81,5 +82,11 @@ public class EnvironmentLanActivity extends Activity {
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cursor.close();
     }
 }

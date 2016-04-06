@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
+import android.net.DhcpInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,17 +16,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
 
 
 public class MainActivity extends Activity {
@@ -36,6 +29,16 @@ public class MainActivity extends Activity {
     private String mCurrentIp;
     private SharedPreferences mSharedPreferences;
 
+    public String   s_dns1 ;
+    public String   s_dns2;
+    public String   s_gateway;
+    public String   s_ipAddress;
+    public String   s_leaseDuration;
+    public String   s_netmask;
+    public String   s_serverAddress;
+    DhcpInfo dhcpInfo;
+    WifiManager wifii;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +46,22 @@ public class MainActivity extends Activity {
 
         //Получаем текущий IP-адресс
         mCurrentIp = NetHelper.getIPAddress(true);
+
+        /*
+        wifii = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        dhcpInfo = wifii.getDhcpInfo();
+
+
+        s_dns1 = "DNS 1: "+String.valueOf(dhcpInfo.dns1);
+        s_dns2 = "DNS 2: "+String.valueOf(dhcpInfo.dns2);
+        s_gateway = "Default Gateway: "+String.valueOf(dhcpInfo.gateway);
+        s_ipAddress = "IP Address: "+String.valueOf(dhcpInfo.ipAddress);
+        s_leaseDuration = "Lease Time: "+ String.valueOf(dhcpInfo.leaseDuration);
+        s_netmask = "Subnet Mask: " + String.valueOf(dhcpInfo.netmask);
+        s_serverAddress="Server IP: "+String.valueOf(dhcpInfo.serverAddress);
+
+        Log.d(TAG, "Network Info\n"+s_dns1+"\n"+s_dns2+"\n"+s_gateway+"\n"+s_ipAddress+"\n"+s_leaseDuration+"\n"+s_netmask+"\n"+s_serverAddress );
+        */
 
         //Добавляем IP в SharedPreferences
         mSharedPreferences = getSharedPreferences(Host.PREF_IP_ADDRESS, MODE_PRIVATE);
