@@ -191,4 +191,16 @@ public class NetHelper {
             return null;
         }*/
     }
+
+    public static String intToIp(int i) {
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(( i & 0xFF)).append(".")
+                .append(((i >> 8 ) & 0xFF)).append(".")
+                .append(((i >> 16 ) & 0xFF)).append(".")
+                .append(((i >> 24 ) & 0xFF ));
+
+        return stringBuilder.toString();
+    }
+
 }

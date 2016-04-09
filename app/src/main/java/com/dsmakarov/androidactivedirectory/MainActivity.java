@@ -27,30 +27,27 @@ public class MainActivity extends Activity {
     public static final String TAG = "MainActivity";
 
     private String mCurrentIp;
+    private String mCurrentSubnetMask;
     private SharedPreferences mSharedPreferences;
 
-    public String   s_dns1 ;
-    public String   s_dns2;
-    public String   s_gateway;
-    public String   s_ipAddress;
-    public String   s_leaseDuration;
-    public String   s_netmask;
-    public String   s_serverAddress;
+    public String s_dns1 ;
+    public String s_dns2;
+    public String s_gateway;
+    public String s_ipAddress;
+    public String s_leaseDuration;
+    public String s_netmask;
+    public String s_serverAddress;
+
     DhcpInfo dhcpInfo;
-    WifiManager wifii;
+    WifiManager wifiManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Получаем текущий IP-адресс
-        mCurrentIp = NetHelper.getIPAddress(true);
-
-        /*
-        wifii = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        dhcpInfo = wifii.getDhcpInfo();
-
+        wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        dhcpInfo = wifiManager.getDhcpInfo();
 
         s_dns1 = "DNS 1: "+String.valueOf(dhcpInfo.dns1);
         s_dns2 = "DNS 2: "+String.valueOf(dhcpInfo.dns2);
@@ -61,12 +58,21 @@ public class MainActivity extends Activity {
         s_serverAddress="Server IP: "+String.valueOf(dhcpInfo.serverAddress);
 
         Log.d(TAG, "Network Info\n"+s_dns1+"\n"+s_dns2+"\n"+s_gateway+"\n"+s_ipAddress+"\n"+s_leaseDuration+"\n"+s_netmask+"\n"+s_serverAddress );
-        */
+
 
         //Добавляем IP в SharedPreferences
         mSharedPreferences = getSharedPreferences(Host.PREF_IP_ADDRESS, MODE_PRIVATE);
         SharedPreferences.Editor editor = mSharedPreferences.edit();
+        //Получаем текущий IP-адресс
+        mCurrentIp = NetHelper.getIPAddress(true);
         editor.putString("currentIp", mCurrentIp);
+
+        if (wifiManager.isWifiEnabled()) {
+            //Получаем текущую маску подсети
+            mCurrentSubnetMask = NetHelper.intToIp(dhcpInfo.netmask);
+        }
+
+        editor.putString("currentSubnetMask", mCurrentSubnetMask);
         editor.apply();
 
         TextView macTextView = (TextView) findViewById(R.id.mac_textview);
@@ -93,6 +99,8 @@ public class MainActivity extends Activity {
         final TextView resultTextView = (TextView) findViewById(R.id.result_textview);
         final Button pingButton = (Button) findViewById(R.id.start_ping_button);
 
+        //resultTextView.setText(NetHelper.intToIp(dhcpInfo.netmask));
+
         pingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,6 +115,7 @@ public class MainActivity extends Activity {
         });
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -2,9 +2,11 @@ package com.dsmakarov.androidactivedirectory;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ListView;
@@ -27,7 +29,11 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
     private ProgressBar mProgressBar;
     private ListView mListView;
     private Context mContext;
-    private int mSubnetCount = 256;
+    private WifiManager mWifiManager;
+    private String mCurrentSubnetMask;
+
+    // TODO: 09.04.2016 Достать из SharedPreferences
+    private int mSubnetCount = 1;
 
     private SQLiteOpenHelper hostsDatabaseHelper;
     private SQLiteDatabase db;
@@ -50,14 +56,22 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
     @Override
     protected ArrayList<HashMap<String, String>> doInBackground(String... params) {
 
+        mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+
         // TODO: 03.04.2016 Изменить возвращаемый тип
         ArrayList<HashMap<String, String>> resultArrayList = new ArrayList<>();
 
         Log.d(TAG, "doInBackground: Начало выполнения " + params[0]);
 
         //Позиция последней точки в IP-адресе
-        int lastDot = params[0].lastIndexOf(".");
-        String subnetIp = params[0].substring(0, lastDot + 1);
+        int lastIpDot = params[0].lastIndexOf(".");
+        String subnetIp = params[0].substring(0, lastIpDot + 1);
+
+        //Получаем маску подсети если wifi доступен
+        if (mWifiManager.isWifiEnabled()) {
+            SharedPreferences sharedPreferences = mContext.getSharedPreferences(Host.PREF_IP_ADDRESS, Context.MODE_PRIVATE);
+            mCurrentSubnetMask = sharedPreferences.getString("currentSubnetMask", "255.255.255.0");
+        }
 
         ContentValues hostCv = new ContentValues();
         db.delete(HostsDatabaseHelper.HOSTS_TABLE, null, null);
@@ -105,6 +119,8 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
         super.onPostExecute(hashMaps);
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
+        Toast.makeText(mContext, mCurrentSubnetMask, Toast.LENGTH_LONG).show();
+
         Cursor cursor = db.query(HostsDatabaseHelper.HOSTS_TABLE,
                 new String[]{
                         HostsDatabaseHelper.KEY_ID,
@@ -123,9 +139,11 @@ public class IpScannerTask extends AsyncTask<String, Integer, ArrayList<HashMap<
 
             mListView.setAdapter(listCursorAdapter);
 
+            /*
             Toast.makeText(mContext,
                     "Найдено " + cursor.getCount() + " хостов",
                     Toast.LENGTH_SHORT).show();
+                    */
         }
         //TODO: 03.04.2016 Закрыть курсор
         db.close();
